@@ -9,7 +9,7 @@ const Book = function (props) {
             <div className="book-top">
                 <img className="book-cover" src={book.imageLinks.smallThumbnail} alt={book.title}/>
                 <div className="book-shelf-changer">
-                    <select>
+                    <select value={book.shelf} onChange={e => props.onBookshelfChange(book.id, e.target.value)}>
                         <option value="none" disabled>Move to...</option>
                         <option value="currentlyReading">Currently Reading</option>
                         <option value="wantToRead">Want to Read</option>

@@ -23,6 +23,21 @@ class BooksApp extends React.Component {
             });
     }
 
+    handleBookshelfChange = (id, shelf) => {
+        console.log(id, shelf);
+        this.setState(state => {
+           const books = state.books.map(book => {
+               if (book.id === id) {
+                   book.shelf = shelf;
+               }
+
+               return book;
+           });
+
+           return {books};
+        });
+    }
+
     render() {
         const currentlyReadingBooks = this.state.books.filter(book => book.shelf === 'currentlyReading');
         const wantToReadBooks = this.state.books.filter(book => book.shelf === 'wantToRead');
@@ -41,9 +56,9 @@ class BooksApp extends React.Component {
                         </div>
                         <div className="list-books-content">
                             <div>
-                                <Bookshelf name="Currently Reading" books={currentlyReadingBooks}/>
-                                <Bookshelf name="Want to Read" books={wantToReadBooks}/>
-                                <Bookshelf name="Read" books={readBooks}/>
+                                <Bookshelf name="Currently Reading" books={currentlyReadingBooks} onBookshelfChange={this.handleBookshelfChange}/>
+                                <Bookshelf name="Want to Read" books={wantToReadBooks} onBookshelfChange={this.handleBookshelfChange}/>
+                                <Bookshelf name="Read" books={readBooks} onBookshelfChange={this.handleBookshelfChange}/>
                             </div>
                         </div>
                         <div className="open-search">
