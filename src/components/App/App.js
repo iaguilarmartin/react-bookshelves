@@ -13,26 +13,23 @@ class BooksApp extends React.Component {
 
     componentDidMount() {
         BooksAPI.getAll()
-            .then(books => {
-                this.setState({
-                    books
-                })
-            })
-            .catch(err => {
-                console.error("Error getting books from API service", err);
-            });
+            .then(books => this.setState({books}))
+            .catch(err => console.error("Error getting books from API service", err));
     }
 
-    handleBookshelfChange = (id, shelf) => {
-        console.log(id, shelf);
-        this.setState(state => {
-           const books = state.books.map(book => {
-               if (book.id === id) {
-                   book.shelf = shelf;
-               }
+    handleBookshelfChange = (book, shelf) => {
+        book.shelf = shelf;
 
-               return book;
-           });
+        BooksAPI.update(book, shelf)
+            .then(() => console.log("Book shelf updated successfully"))
+            .catch(err => console.error("Error updating book shelf using API service", err));
+
+        this.setState(state => {
+            let books = state.books.filter(b => book.id !== b.id);;
+
+            if (shelf !== 'none') {
+                books = books.concat([book]);
+            }
 
            return {books};
         });
@@ -46,7 +43,7 @@ class BooksApp extends React.Component {
         return (
             <div className="app">
                 <Route path="/search" render={() => (
-                   <Search books={this.state.books}/>
+                   <Search books={this.state.books} onBookshelfChange={this.handleBookshelfChange}/>
                 )} />
 
                 <Route exact path="/" render={() => (

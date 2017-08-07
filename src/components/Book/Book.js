@@ -2,14 +2,16 @@ import React from 'react';
 
 const Book = function (props) {
     const {book} = props;
-    const author = book.authors.join(', ');
+    const title = book.title || '';
+    const thumbnail = book.imageLinks && book.imageLinks.smallThumbnail ? book.imageLinks.smallThumbnail : '';
+    const author = book.authors ? book.authors.join(', ') : '';
 
     return (
         <div className="book">
             <div className="book-top">
-                <img className="book-cover" src={book.imageLinks.smallThumbnail} alt={book.title}/>
+                <img className="book-cover" src={thumbnail} alt={title}/>
                 <div className="book-shelf-changer">
-                    <select value={book.shelf} onChange={e => props.onBookshelfChange(book.id, e.target.value)}>
+                    <select value={book.shelf} onChange={e => props.onBookshelfChange(book, e.target.value)}>
                         <option value="none" disabled>Move to...</option>
                         <option value="currentlyReading">Currently Reading</option>
                         <option value="wantToRead">Want to Read</option>
@@ -18,7 +20,7 @@ const Book = function (props) {
                     </select>
                 </div>
             </div>
-            <div className="book-title">{book.title}</div>
+            <div className="book-title">{title}</div>
             <div className="book-authors">{author}</div>
         </div>
     );
