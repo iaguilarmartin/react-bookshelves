@@ -103,6 +103,23 @@ body, .app {
   padding: 80px 10px 20px;
 }
 
+.search-books-input-animation {
+  position: absolute;
+  right: 20px;
+  top: 8px;
+  background-image: url('../../icons/loading.gif');
+  height: 36px;
+  width: 36px;
+}
+
+.search-no-results {
+  width: 100%;
+  text-align: center;
+  color: #666;
+  font-size: 1.1em;
+  margin-top: 25px;
+}
+
 /* books grid */
 
 .books-grid {
