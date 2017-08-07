@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import BooksGrid from '../BooksGrid/BooksGrid';
 import * as BooksAPI from '../../utils/BooksAPI';
+import PropTypes from 'prop-types';
 
 class Search extends Component {
 
@@ -58,6 +59,11 @@ class Search extends Component {
             </div>
         );
     }
+};
+
+Search.propTypes = {
+    books: PropTypes.array.isRequired,
+    onBookshelfChange: PropTypes.func.isRequired
 };
 
 export default Search;
