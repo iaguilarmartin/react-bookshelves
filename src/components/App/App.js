@@ -1,9 +1,9 @@
 import React from 'react';
 import './App.css';
-import { Route, Link } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import Search from '../Search/Search';
 import * as BooksAPI from '../../utils/BooksAPI';
-import Bookshelf from '../Bookshelf/Bookshelf';
+import BooksList from '../BooksList/BooksList';
 
 class BooksApp extends React.Component {
 
@@ -25,7 +25,7 @@ class BooksApp extends React.Component {
             .catch(err => console.error("Error updating book shelf using API service", err));
 
         this.setState(state => {
-            let books = state.books.filter(b => book.id !== b.id);;
+            let books = state.books.filter(b => book.id !== b.id);
 
             if (shelf !== 'none') {
                 books = books.concat([book]);
@@ -33,13 +33,9 @@ class BooksApp extends React.Component {
 
            return {books};
         });
-    }
+    };
 
     render() {
-        const currentlyReadingBooks = this.state.books.filter(book => book.shelf === 'currentlyReading');
-        const wantToReadBooks = this.state.books.filter(book => book.shelf === 'wantToRead');
-        const readBooks = this.state.books.filter(book => book.shelf === 'read');
-
         return (
             <div className="app">
                 <Route path="/search" render={() => (
@@ -47,25 +43,11 @@ class BooksApp extends React.Component {
                 )} />
 
                 <Route exact path="/" render={() => (
-                    <div className="list-books">
-                        <div className="list-books-title">
-                            <h1>MyReads</h1>
-                        </div>
-                        <div className="list-books-content">
-                            <div>
-                                <Bookshelf name="Currently Reading" books={currentlyReadingBooks} onBookshelfChange={this.handleBookshelfChange}/>
-                                <Bookshelf name="Want to Read" books={wantToReadBooks} onBookshelfChange={this.handleBookshelfChange}/>
-                                <Bookshelf name="Read" books={readBooks} onBookshelfChange={this.handleBookshelfChange}/>
-                            </div>
-                        </div>
-                        <div className="open-search">
-                            <Link to="/search">Add a book</Link>
-                        </div>
-                    </div>
+                    <BooksList books={this.state.books} onBookshelfChange={this.handleBookshelfChange}/>
                 )} />
             </div>
         )
     }
 }
 
-export default BooksApp
+export default BooksApp;
