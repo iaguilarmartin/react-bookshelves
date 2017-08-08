@@ -3,40 +3,50 @@ import { Link } from 'react-router-dom';
 import BooksGrid from '../BooksGrid/BooksGrid';
 import * as BooksAPI from '../../utils/BooksAPI';
 import PropTypes from 'prop-types';
+import {debounce} from 'throttle-debounce';
 
 class Search extends Component {
 
-    state = {
-        books: null,
-        searching: false
-    };
+    constructor(props) {
+        super(props);
 
-    handleKeyPress(event) {
-        if(event.key === 'Enter') {
-            const query = event.target.value;
+        this.state = {
+            books: null,
+            pendingRequests: 0
+        };
 
-            if (query.length === 0) {
-                this.setState({books: []});
-                return;
-            }
+        this.search = debounce(500, this.search);
+    }
 
-            event.target.value = '';
-            this.setState({searching:true});
+    handleOnChange(event) {
+        const query = event.target.value;
+        this.search(query);
+    }
 
-            BooksAPI.search(query, 20)
-                .then(response => {
-                    let books = response.error ? [] : response;
-
-                    books = books.map(book => {
-                        const existingBook = this.props.books.find(b => b.id === book.id);
-                        book.shelf = existingBook && existingBook.shelf ? existingBook.shelf : 'none';
-                        return book;
-                    });
-
-                    this.setState({books, searching:false})
-                })
-                .catch(err => console.error('Error searching books using API service with query: ' + query, err));
+    search(query) {
+        if (query.length === 0) {
+            this.setState({books: []});
+            return;
         }
+
+        this.setState(state => ({pendingRequests: state.pendingRequests + 1}));
+
+        BooksAPI.search(query, 20)
+            .then(response => {
+                let books = response.error ? [] : response;
+
+                books = books.map(book => {
+                    const existingBook = this.props.books.find(b => b.id === book.id);
+                    book.shelf = existingBook && existingBook.shelf ? existingBook.shelf : 'none';
+                    return book;
+                });
+
+                this.setState(state => ({books, pendingRequests: state.pendingRequests - 1}));
+            })
+            .catch(err => {
+                this.setState(state => ({pendingRequests: state.pendingRequests - 1}));
+                console.error('Error searching books using API service with query: ' + query, err)
+            });
     }
 
     render() {
@@ -45,8 +55,8 @@ class Search extends Component {
                 <div className="search-books-bar">
                     <Link to="/" className="close-search">Close</Link>
                     <div className="search-books-input-wrapper">
-                        <input type="text" placeholder="Search by title or author" onKeyPress={e => this.handleKeyPress(e)}/>
-                        {this.state.searching && (<div className="search-books-input-animation" />)}
+                        <input type="text" placeholder="Search by title or author" onChange={this.handleOnChange.bind(this)}/>
+                        {this.state.pendingRequests > 0 && (<div className="search-books-input-animation" />)}
                     </div>
                 </div>
                 <div className="search-books-results">
@@ -59,7 +69,7 @@ class Search extends Component {
             </div>
         );
     }
-};
+}
 
 Search.propTypes = {
     books: PropTypes.array.isRequired,
